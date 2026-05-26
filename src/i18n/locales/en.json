@@ -153,6 +153,7 @@
     "weather": "Weather",
     "dayNight": "Day / Night",
     "vacOverlay": "Georeferenced VAC",
+    "joTraffic": "Jo session",
     "oaciBasemap": "OACI basemap",
     "oaciVector": "OACI airspaces (SIA)",
     "terrainShading": "Terrain Shading",
@@ -1674,6 +1675,36 @@
     "uninstallSuccess": "Module removed.",
     "siaFrance": {
       "settingsTab": "VAC / SIA"
+    },
+    "jo": {
+      "settingsTab": "Jo multiplayer"
+    }
+  },
+  "jo": {
+    "attribution": "Multiplayer traffic via Jo / JoinFS. Requires JoinFS running with the X-Plane plugin.",
+    "settings": {
+      "title": "Jo multiplayer",
+      "description": "Display aircraft from your JoinFS session on the map. Install the Jo X-Plane plugin and run the local bridge.",
+      "pluginMissing": "The Jo X-Plane plugin is not installed. Download it or install a .xpl file into Resources/plugins/Jo/.",
+      "legacyJoinFs": "Detected legacy JoinFS plugin folder — you can migrate to Resources/plugins/Jo/ when a Jo build is available.",
+      "pluginTitle": "X-Plane plugin",
+      "pluginInstalled": "Installed: {{path}}",
+      "pluginNotInstalled": "Not found under Resources/plugins/Jo/ (or JoinFS/).",
+      "download": "Download plugin",
+      "installFromFile": "Install from .xpl file…",
+      "installOk": "Plugin installed. Restart X-Plane to load it.",
+      "installFailed": "Install failed: {{error}}",
+      "bridgeTitle": "Local bridge",
+      "bridgeDescription": "Jo exposes session traffic on HTTP (default port 9570). Start JoinFS and join a session before enabling the map overlay.",
+      "bridgeUrl": "Bridge URL",
+      "bridgeOk": "Bridge reachable",
+      "bridgeOffline": "Bridge offline — is JoinFS running?",
+      "sessionConnected": "Session: {{name}} · {{count}} aircraft",
+      "sessionDisconnected": "Not connected to a JoinFS session",
+      "mapTitle": "Map overlay",
+      "mapDescription": "Show session aircraft as orange icons on the map (same style as VATSIM).",
+      "showOnMap": "Show on map",
+      "hideOnMap": "Hide from map"
     }
   },
   "oaci": {

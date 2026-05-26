@@ -24,6 +24,7 @@ import {
   Search,
   Settings,
   Ship,
+  Users,
   X,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -59,6 +60,7 @@ import { cn } from '@/lib/utils/helpers';
 import type { Airport } from '@/lib/xplaneServices/dataService';
 import { useDistinctCountries, useNavDataCounts } from '@/queries';
 import { useIvaoQuery } from '@/queries/useIvaoQuery';
+import { useJoStatusQuery, useJoTrafficQuery } from '@/queries/useJoQuery';
 import { useVatsimQuery } from '@/queries/useVatsimQuery';
 import { useAppStore } from '@/stores/appStore';
 import { useFlightPlanStore } from '@/stores/flightPlanStore';
@@ -410,6 +412,7 @@ interface ToolbarProps {
   onSelectAirport: (airport: Airport) => void;
   onToggleVatsim: () => void;
   onToggleIvao: () => void;
+  onToggleJo: () => void;
   onToggleWeatherRadar: () => void;
   weatherRadarControls: WeatherRadarControls;
   onNavToggle: (layer: keyof NavLayerVisibility) => void;
@@ -422,6 +425,7 @@ export default function Toolbar({
   onSelectAirport,
   onToggleVatsim,
   onToggleIvao,
+  onToggleJo,
   onToggleWeatherRadar,
   weatherRadarControls,
   onNavToggle,
@@ -455,6 +459,8 @@ export default function Toolbar({
   const setVacOverlayEnabled = useMapStore((s) => s.setVacOverlayEnabled);
   const modules = useModulesStore((s) => s.modules);
   const siaModuleEnabled = isModuleActive(modules, 'sia-france');
+  const joModuleEnabled = isModuleActive(modules, 'jo');
+  const joEnabled = useMapStore((s) => s.joEnabled);
   const exploreOpen = useMapStore((s) => s.explore.isOpen);
   const setExploreOpen = useMapStore((s) => s.setExploreOpen);
   const airportFilters = useMapStore((s) => s.airportFilters);
@@ -485,6 +491,12 @@ export default function Toolbar({
   const vatsimPilotCount = vatsimData?.pilots?.length;
   const { data: ivaoData } = useIvaoQuery(ivaoEnabled);
   const ivaoPilotCount = ivaoData?.clients.pilots.length;
+  const { data: joStatus } = useJoStatusQuery(joModuleEnabled);
+  const { data: joTraffic } = useJoTrafficQuery(
+    joModuleEnabled && joEnabled,
+    Boolean(joStatus?.sessionConnected)
+  );
+  const joAircraftCount = joTraffic?.aircraft?.length;
 
   // Nav data counts - derived from airport location
   const selectedAirport = useMemo(
@@ -946,6 +958,17 @@ export default function Toolbar({
                 >
                   <Map className="mr-2 h-4 w-4" />
                   {t('toolbar.vacOverlay')}
+                </DropdownMenuCheckboxItem>
+              )}
+              {joModuleEnabled && (
+                <DropdownMenuCheckboxItem checked={joEnabled} onCheckedChange={onToggleJo}>
+                  <Users className="mr-2 h-4 w-4" />
+                  {t('toolbar.joTraffic')}
+                  {joEnabled && joAircraftCount !== undefined && (
+                    <Badge variant="warning" className="ml-auto px-1.5 py-0.5">
+                      {joAircraftCount}
+                    </Badge>
+                  )}
                 </DropdownMenuCheckboxItem>
               )}
               <DropdownMenuCheckboxItem checked={vatsimEnabled} onCheckedChange={onToggleVatsim}>

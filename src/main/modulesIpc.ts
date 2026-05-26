@@ -1,6 +1,7 @@
 import { BrowserWindow, type OpenDialogOptions, dialog, ipcMain } from 'electron';
 import { ModuleManager } from '@/lib/modules/ModuleManager';
 import type { XDispatchModuleManifest } from '@/lib/modules/types';
+import { syncJoModule } from '@/modules/jo/main/lifecycle';
 import { syncSiaFranceModule } from '@/modules/sia-france/main/lifecycle';
 
 let manager: ModuleManager | null = null;
@@ -17,8 +18,8 @@ export async function initModuleManager(bundled: XDispatchModuleManifest[]): Pro
 
 export async function syncBundledModulesRuntime(): Promise<void> {
   if (!getMainWindowRef) return;
-  const enabled = getManager().isModuleEnabled('sia-france');
-  await syncSiaFranceModule(getMainWindowRef, enabled);
+  await syncSiaFranceModule(getMainWindowRef, getManager().isModuleEnabled('sia-france'));
+  await syncJoModule(getManager().isModuleEnabled('jo'));
 }
 
 export async function registerModulesIPC(getMainWindow: () => BrowserWindow | null): Promise<void> {
@@ -28,8 +29,9 @@ export async function registerModulesIPC(getMainWindow: () => BrowserWindow | nu
   ipcMain.handle('modules:catalog', () => getManager().getCatalog());
   ipcMain.handle('modules:setEnabled', async (_, moduleId: string, enabled: boolean) => {
     const result = await getManager().setEnabled(moduleId, enabled);
-    if (result.success && moduleId === 'sia-france') {
-      await syncSiaFranceModule(getMainWindow, enabled);
+    if (result.success) {
+      if (moduleId === 'sia-france') await syncSiaFranceModule(getMainWindow, enabled);
+      if (moduleId === 'jo') await syncJoModule(enabled);
     }
     if (result.success) {
       getMainWindow()?.webContents.send('modules:changed');

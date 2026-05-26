@@ -12,19 +12,21 @@ import { ExplorePanel } from '@/components/layout/Toolbar/ExplorePanel';
 import { NAV_GLOBAL_LOADING } from '@/config/navLayerConfig';
 import { getBasemapTheme } from '@/lib/map/basemapTheme';
 import { resolveMapStyleArg } from '@/lib/map/tileUrlToStyle';
+import { isModuleActive } from '@/lib/modules/registry';
 import { airportBoundsHaveArea, getAirportBounds } from '@/lib/utils/geomath/airportBounds';
 import { Airport } from '@/lib/xplaneServices/dataService';
+import { JoMapHooks } from '@/modules/jo/renderer/JoMapHooks';
+import { removeJoTrafficLayer } from '@/modules/jo/renderer/layers/JoTrafficLayer';
+import { SiaMapHooks } from '@/modules/sia-france/renderer/SiaMapHooks';
 import { usePlaneState, useVatsimSectorQuery } from '@/queries';
 import { useIvaoQuery } from '@/queries/useIvaoQuery';
 import { useNavDataQuery } from '@/queries/useNavDataQuery';
 import { useVatsimMetarQuery } from '@/queries/useVatsimMetarQuery';
 import { useVatsimQuery } from '@/queries/useVatsimQuery';
-import { isModuleActive } from '@/lib/modules/registry';
-import { SiaMapHooks } from '@/modules/sia-france/renderer/SiaMapHooks';
 import { useAppStore } from '@/stores/appStore';
-import { useModulesStore } from '@/stores/modulesStore';
 import { useFlightPlanStore } from '@/stores/flightPlanStore';
 import { FeatureDebugInfo, useMapStore } from '@/stores/mapStore';
+import { useModulesStore } from '@/stores/modulesStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import type { ParsedAirport } from '@/types/apt';
 import { Coordinates } from '@/types/geo';
@@ -115,6 +117,8 @@ export default function Map({ airports }: MapProps) {
   const debugEnabled = useMapStore((s) => s.debugEnabled);
   const vatsimEnabled = useMapStore((s) => s.vatsimEnabled);
   const ivaoEnabled = useMapStore((s) => s.ivaoEnabled);
+  const joEnabled = useMapStore((s) => s.joEnabled);
+  const setJoEnabled = useMapStore((s) => s.setJoEnabled);
   const weatherRadarEnabled = useMapStore((s) => s.weatherRadarEnabled);
   const setWeatherRadarEnabled = useMapStore((s) => s.setWeatherRadarEnabled);
   const dayNightEnabled = useMapStore((s) => s.dayNightEnabled);
@@ -132,6 +136,7 @@ export default function Map({ airports }: MapProps) {
   const mapStyleUrl = mapSettings.mapStyleUrl;
   const modules = useModulesStore((s) => s.modules);
   const siaModuleEnabled = isModuleActive(modules, 'sia-france');
+  const joModuleEnabled = isModuleActive(modules, 'jo');
 
   // Refs for stable airport click callback (avoids circular dependency)
   const renderAirportRef = useRef<
@@ -735,6 +740,15 @@ export default function Map({ airports }: MapProps) {
     }
   }, [mapRef, ivaoPopupRef, vatsimEnabled, ivaoEnabled, setVatsimEnabled, setIvaoEnabled]);
 
+  const handleToggleJo = useCallback(() => {
+    if (joEnabled) {
+      setJoEnabled(false);
+      if (mapRef.current) removeJoTrafficLayer(mapRef.current);
+    } else {
+      setJoEnabled(true);
+    }
+  }, [mapRef, joEnabled, setJoEnabled]);
+
   const handleTogglePlaneTracker = useCallback(() => {
     if (showPlaneTracker) {
       setShowPlaneTracker(false);
@@ -811,6 +825,7 @@ export default function Map({ airports }: MapProps) {
       {/* MapLibre container - fills entire viewport */}
       <div ref={mapContainerRef} className="absolute inset-0" />
 
+      {joModuleEnabled && <JoMapHooks mapRef={mapRef} />}
       {siaModuleEnabled && <SiaMapHooks mapRef={mapRef} />}
 
       {/* Top bar overlay - full width, above sidebar */}
@@ -820,6 +835,7 @@ export default function Map({ airports }: MapProps) {
           onSelectAirport={selectAirport}
           onToggleVatsim={handleToggleVatsim}
           onToggleIvao={handleToggleIvao}
+          onToggleJo={handleToggleJo}
           onToggleWeatherRadar={handleToggleWeatherRadar}
           weatherRadarControls={weatherRadarControls}
           onNavToggle={handleNavLayerToggle}

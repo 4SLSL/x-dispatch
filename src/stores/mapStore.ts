@@ -70,6 +70,7 @@ interface MapState {
   selectedFeature: FeatureDebugInfo | null;
   vatsimEnabled: boolean;
   ivaoEnabled: boolean;
+  joEnabled: boolean;
   showPlaneTracker: boolean;
   /** When true, map follows plane position and heading */
   followPlane: boolean;
@@ -100,6 +101,7 @@ interface MapState {
   setSelectedFeature: (feature: FeatureDebugInfo | null) => void;
   setVatsimEnabled: (enabled: boolean) => void;
   setIvaoEnabled: (enabled: boolean) => void;
+  setJoEnabled: (enabled: boolean) => void;
   setShowPlaneTracker: (enabled: boolean) => void;
   setFollowPlane: (enabled: boolean) => void;
   setWeatherRadarEnabled: (enabled: boolean) => void;
@@ -137,6 +139,7 @@ export const useMapStore = create<MapState>()(
       selectedFeature: null as FeatureDebugInfo | null,
       vatsimEnabled: false,
       ivaoEnabled: false,
+      joEnabled: false,
       showPlaneTracker: false,
       followPlane: false,
       weatherRadarEnabled: false,
@@ -214,6 +217,7 @@ export const useMapStore = create<MapState>()(
           ivaoEnabled: enabled,
           ...(enabled && state.vatsimEnabled ? { vatsimEnabled: false } : {}),
         })),
+      setJoEnabled: (enabled) => set({ joEnabled: enabled }),
       setShowPlaneTracker: (enabled) => set({ showPlaneTracker: enabled }),
       setFollowPlane: (enabled) => set({ followPlane: enabled }),
       setWeatherRadarEnabled: (enabled) => set({ weatherRadarEnabled: enabled }),
@@ -261,7 +265,7 @@ export const useMapStore = create<MapState>()(
     }),
     {
       name: 'xplane-viz-map',
-      version: 11,
+      version: 12,
       partialize: (state) => ({
         layerVisibility: state.layerVisibility,
         navVisibility: state.navVisibility,
@@ -277,6 +281,7 @@ export const useMapStore = create<MapState>()(
         vacOverlayEnabled: state.vacOverlayEnabled,
         oaciBasemapEnabled: state.oaciBasemapEnabled,
         oaciVectorEnabled: state.oaciVectorEnabled,
+        joEnabled: state.joEnabled,
       }),
       migrate: (persisted, version) => {
         const state = persisted as Record<string, unknown>;
@@ -341,6 +346,9 @@ export const useMapStore = create<MapState>()(
           if (state.vacOverlayEnabled === undefined) state.vacOverlayEnabled = false;
           if (state.oaciBasemapEnabled === undefined) state.oaciBasemapEnabled = false;
           if (state.oaciVectorEnabled === undefined) state.oaciVectorEnabled = false;
+        }
+        if (version < 12) {
+          if (state.joEnabled === undefined) state.joEnabled = false;
         }
         return state;
       },

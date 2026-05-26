@@ -153,6 +153,7 @@
     "weather": "Météo",
     "dayNight": "Jour / Nuit",
     "vacOverlay": "VAC géoréférencée",
+    "joTraffic": "Session Jo",
     "oaciBasemap": "Fond OACI",
     "oaciVector": "Espaces aériens OACI (SIA)",
     "terrainShading": "Ombrage du terrain",
@@ -1674,6 +1675,36 @@
     "uninstallSuccess": "Module supprimé.",
     "siaFrance": {
       "settingsTab": "VAC / SIA"
+    },
+    "jo": {
+      "settingsTab": "Jo multijoueur"
+    }
+  },
+  "jo": {
+    "attribution": "Trafic multijoueur via Jo / JoinFS. JoinFS doit être lancé avec le plugin X-Plane.",
+    "settings": {
+      "title": "Jo multijoueur",
+      "description": "Affiche les avions de votre session JoinFS sur la carte. Installez le plugin X-Plane Jo et le pont local.",
+      "pluginMissing": "Le plugin X-Plane Jo n’est pas installé. Téléchargez-le ou placez un fichier .xpl dans Resources/plugins/Jo/.",
+      "legacyJoinFs": "Dossier plugin JoinFS détecté — vous pourrez migrer vers Resources/plugins/Jo/ lorsque Jo sera publié.",
+      "pluginTitle": "Plugin X-Plane",
+      "pluginInstalled": "Installé : {{path}}",
+      "pluginNotInstalled": "Introuvable dans Resources/plugins/Jo/ (ou JoinFS/).",
+      "download": "Télécharger le plugin",
+      "installFromFile": "Installer depuis un .xpl…",
+      "installOk": "Plugin installé. Redémarrez X-Plane pour le charger.",
+      "installFailed": "Échec de l’installation : {{error}}",
+      "bridgeTitle": "Pont local",
+      "bridgeDescription": "Jo expose le trafic de session en HTTP (port 9570 par défaut). Lancez JoinFS et rejoignez une session avant d’activer la carte.",
+      "bridgeUrl": "URL du pont",
+      "bridgeOk": "Pont joignable",
+      "bridgeOffline": "Pont injoignable — JoinFS est-il lancé ?",
+      "sessionConnected": "Session : {{name}} · {{count}} avions",
+      "sessionDisconnected": "Pas de session JoinFS active",
+      "mapTitle": "Calque carte",
+      "mapDescription": "Affiche les avions de la session en orange sur la carte (style proche VATSIM).",
+      "showOnMap": "Afficher sur la carte",
+      "hideOnMap": "Masquer sur la carte"
     }
   },
   "oaci": {

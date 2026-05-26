@@ -400,6 +400,34 @@ contextBridge.exposeInMainWorld('modulesAPI', {
   },
 });
 
+contextBridge.exposeInMainWorld('joAPI', {
+  getBridgeUrl: () => ipcRenderer.invoke('jo:getBridgeUrl') as Promise<string>,
+  setBridgeUrl: (url: string) =>
+    ipcRenderer.invoke('jo:setBridgeUrl', url) as Promise<{ success: boolean; bridgeUrl: string }>,
+  detectPlugin: () =>
+    ipcRenderer.invoke('jo:detectPlugin') as Promise<
+      import('./modules/jo/lib/types').JoPluginDetection
+    >,
+  getDownloadInfo: () =>
+    ipcRenderer.invoke('jo:getDownloadInfo') as Promise<
+      import('./modules/jo/lib/types').JoDownloadInfo
+    >,
+  openDownloadPage: () =>
+    ipcRenderer.invoke('jo:openDownloadPage') as Promise<{ success: boolean }>,
+  installPluginFromPath: (sourcePath: string) =>
+    ipcRenderer.invoke('jo:installPluginFromPath', sourcePath) as Promise<{
+      success: boolean;
+      error?: string;
+    }>,
+  browseForPlugin: () => ipcRenderer.invoke('jo:browseForPlugin') as Promise<string | null>,
+  getStatus: () =>
+    ipcRenderer.invoke('jo:getStatus') as Promise<import('./modules/jo/lib/types').JoBridgeStatus>,
+  getTraffic: () =>
+    ipcRenderer.invoke('jo:getTraffic') as Promise<
+      import('./modules/jo/lib/types').JoTrafficSnapshot
+    >,
+});
+
 contextBridge.exposeInMainWorld('siaAPI', {
   listProducts: () => ipcRenderer.invoke('sia:listProducts'),
   getInstallStatus: () => ipcRenderer.invoke('sia:getInstallStatus'),
@@ -867,6 +895,17 @@ declare global {
       browseForZip: () => Promise<string | null>;
       getRendererBundlePath: (moduleId: string) => Promise<string | null>;
       onChanged: (callback: () => void) => () => void;
+    };
+    joAPI: {
+      getBridgeUrl: () => Promise<string>;
+      setBridgeUrl: (url: string) => Promise<{ success: boolean; bridgeUrl: string }>;
+      detectPlugin: () => Promise<import('./modules/jo/lib/types').JoPluginDetection>;
+      getDownloadInfo: () => Promise<import('./modules/jo/lib/types').JoDownloadInfo>;
+      openDownloadPage: () => Promise<{ success: boolean }>;
+      installPluginFromPath: (sourcePath: string) => Promise<{ success: boolean; error?: string }>;
+      browseForPlugin: () => Promise<string | null>;
+      getStatus: () => Promise<import('./modules/jo/lib/types').JoBridgeStatus>;
+      getTraffic: () => Promise<import('./modules/jo/lib/types').JoTrafficSnapshot>;
     };
     siaAPI: {
       listProducts: () => Promise<readonly import('./modules/sia-france/lib/types').SiaProduct[]>;
