@@ -15,7 +15,6 @@
       "repository": "4SLSL/JFS4XD",
       "defaultRef": "v1.0.0",
       "trusted": true,
-      "bundled": true,
       "name": "JFS4XD multiplayer",
       "description": "JoinFS session traffic on the X-Dispatch map",
       "author": "4SLSL"

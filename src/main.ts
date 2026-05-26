@@ -66,7 +66,6 @@ import {
   registerModulesIPC,
   syncBundledModulesRuntime,
 } from './main/modulesIpc';
-import { joManifest } from './modules/jo';
 import { siaFranceManifest } from './modules/sia-france';
 import { registerVacPdfScheme } from './modules/sia-france/main/protocol';
 import type { LoadingProgress, PlaneState } from './types/xplane';
@@ -1707,7 +1706,7 @@ app.whenReady().then(async () => {
   initTileCache();
   registerTileCacheHandler();
   registerMbtilesHandler();
-  await initModuleManager([siaFranceManifest, joManifest]);
+  await initModuleManager([siaFranceManifest]);
 
   registerIpcHandlers();
   mainWindow = createWindow();

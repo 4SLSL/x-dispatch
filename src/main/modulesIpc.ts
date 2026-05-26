@@ -19,7 +19,9 @@ export async function initModuleManager(bundled: XDispatchModuleManifest[]): Pro
 export async function syncBundledModulesRuntime(): Promise<void> {
   if (!getMainWindowRef) return;
   await syncSiaFranceModule(getMainWindowRef, getManager().isModuleEnabled('sia-france'));
-  await syncJoModule(getManager().isModuleEnabled('jfs4xd'));
+  const modules = await getManager().listModules();
+  const jfs4xdEnabled = modules.some((m) => m.manifest.id === 'jfs4xd' && m.state.enabled);
+  await syncJoModule(jfs4xdEnabled);
 }
 
 export async function registerModulesIPC(getMainWindow: () => BrowserWindow | null): Promise<void> {
