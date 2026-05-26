@@ -1,7 +1,7 @@
 import logger from '@/lib/utils/logger';
 import { registerJoIPC, unregisterJoIPC } from './joIpc';
 
-const JO_MODULE_ID = 'jo';
+const JO_MODULE_ID = 'jfs4xd';
 
 let joRuntimeEnabled = false;
 

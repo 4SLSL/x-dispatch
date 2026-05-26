@@ -11,14 +11,14 @@
       "author": "4SLSL"
     },
     {
-      "id": "jo",
-      "repository": "4SLSL/jo-xplane",
+      "id": "jfs4xd",
+      "repository": "4SLSL/JFS4XD",
       "defaultRef": "v1.0.0",
       "trusted": true,
       "bundled": true,
-      "name": "Jo multiplayer",
+      "name": "JFS4XD multiplayer",
       "description": "JoinFS session traffic on the X-Dispatch map",
-      "author": "omx5o"
+      "author": "4SLSL"
     }
   ]
 }

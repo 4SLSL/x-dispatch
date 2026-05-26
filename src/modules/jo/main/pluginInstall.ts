@@ -6,7 +6,7 @@ import { getActiveInstallation } from '@/lib/xplaneServices/dataService/config';
 import { detectJoPlugin, expectedXplFileName, joInstallTargetDir } from '../lib/pluginPaths';
 import type { JoDownloadInfo } from '../lib/types';
 
-const JO_REPO = '4SLSL/jo-xplane';
+const JO_REPO = '4SLSL/JFS4XD';
 const JOINFS_SOURCES_URL = 'https://github.com/omx5o/JoinFS';
 const JOINFS_RELEASES_URL = 'https://github.com/tuduce/JoinFS/releases/latest';
 
@@ -71,7 +71,7 @@ export async function getJoDownloadInfo(): Promise<JoDownloadInfo> {
     const asset = pickXplAsset(release.assets);
     return {
       available: true,
-      label: `Jo ${release.tag_name}`,
+      label: `JFS4XD ${release.tag_name}`,
       url: asset?.browser_download_url ?? release.html_url,
       version: release.tag_name,
       notes: release.body?.slice(0, 400),
@@ -79,7 +79,7 @@ export async function getJoDownloadInfo(): Promise<JoDownloadInfo> {
   }
   return {
     available: true,
-    label: 'Jo / JoinFS sources',
+    label: 'JFS4XD / JoinFS sources',
     url: JOINFS_SOURCES_URL,
     notes: `Compilez depuis vendor/JoinFS-XP (${JO_REPO}) ou installez via JoinFS : ${JOINFS_RELEASES_URL}`,
   };

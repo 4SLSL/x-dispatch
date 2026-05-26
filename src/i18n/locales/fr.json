@@ -153,7 +153,7 @@
     "weather": "Météo",
     "dayNight": "Jour / Nuit",
     "vacOverlay": "VAC géoréférencée",
-    "joTraffic": "Session Jo",
+    "jfs4xdTraffic": "Session JFS4XD",
     "oaciBasemap": "Fond OACI",
     "oaciVector": "Espaces aériens OACI (SIA)",
     "terrainShading": "Ombrage du terrain",
@@ -1676,14 +1676,14 @@
     "siaFrance": {
       "settingsTab": "VAC / SIA"
     },
-    "jo": {
-      "settingsTab": "Jo multijoueur"
+    "jfs4xd": {
+      "settingsTab": "JFS4XD multijoueur"
     }
   },
   "jo": {
     "attribution": "Trafic multijoueur via Jo / JoinFS. JoinFS doit être lancé avec le plugin X-Plane.",
     "settings": {
-      "title": "Jo multijoueur",
+      "title": "JFS4XD multijoueur",
       "description": "Affiche les avions de votre session JoinFS sur la carte. Installez le plugin X-Plane Jo et le pont local.",
       "pluginMissing": "Le plugin X-Plane Jo n’est pas installé. Téléchargez-le ou placez un fichier .xpl dans Resources/plugins/Jo/.",
       "legacyJoinFs": "Dossier plugin JoinFS détecté — vous pourrez migrer vers Resources/plugins/Jo/ lorsque Jo sera publié.",

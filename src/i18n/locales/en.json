@@ -153,7 +153,7 @@
     "weather": "Weather",
     "dayNight": "Day / Night",
     "vacOverlay": "Georeferenced VAC",
-    "joTraffic": "Jo session",
+    "jfs4xdTraffic": "JFS4XD session",
     "oaciBasemap": "OACI basemap",
     "oaciVector": "OACI airspaces (SIA)",
     "terrainShading": "Terrain Shading",
@@ -1676,14 +1676,14 @@
     "siaFrance": {
       "settingsTab": "VAC / SIA"
     },
-    "jo": {
-      "settingsTab": "Jo multiplayer"
+    "jfs4xd": {
+      "settingsTab": "JFS4XD multiplayer"
     }
   },
   "jo": {
     "attribution": "Multiplayer traffic via Jo / JoinFS. Requires JoinFS running with the X-Plane plugin.",
     "settings": {
-      "title": "Jo multiplayer",
+      "title": "JFS4XD multiplayer",
       "description": "Display aircraft from your JoinFS session on the map. Install the Jo X-Plane plugin and run the local bridge.",
       "pluginMissing": "The Jo X-Plane plugin is not installed. Download it or install a .xpl file into Resources/plugins/Jo/.",
       "legacyJoinFs": "Detected legacy JoinFS plugin folder — you can migrate to Resources/plugins/Jo/ when a Jo build is available.",

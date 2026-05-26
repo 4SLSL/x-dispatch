@@ -12,7 +12,7 @@ export function JoMapHooks({ mapRef }: { mapRef: MapRef }) {
         closeButton: true,
         closeOnClick: true,
         maxWidth: '280px',
-        className: 'jo-traffic-popup',
+        className: 'jfs4xd-traffic-popup',
       }),
     []
   );

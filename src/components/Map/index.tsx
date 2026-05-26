@@ -136,7 +136,7 @@ export default function Map({ airports }: MapProps) {
   const mapStyleUrl = mapSettings.mapStyleUrl;
   const modules = useModulesStore((s) => s.modules);
   const siaModuleEnabled = isModuleActive(modules, 'sia-france');
-  const joModuleEnabled = isModuleActive(modules, 'jo');
+  const joModuleEnabled = isModuleActive(modules, 'jfs4xd');
 
   // Refs for stable airport click callback (avoids circular dependency)
   const renderAirportRef = useRef<

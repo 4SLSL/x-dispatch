@@ -459,7 +459,7 @@ export default function Toolbar({
   const setVacOverlayEnabled = useMapStore((s) => s.setVacOverlayEnabled);
   const modules = useModulesStore((s) => s.modules);
   const siaModuleEnabled = isModuleActive(modules, 'sia-france');
-  const joModuleEnabled = isModuleActive(modules, 'jo');
+  const joModuleEnabled = isModuleActive(modules, 'jfs4xd');
   const joEnabled = useMapStore((s) => s.joEnabled);
   const exploreOpen = useMapStore((s) => s.explore.isOpen);
   const setExploreOpen = useMapStore((s) => s.setExploreOpen);
@@ -963,7 +963,7 @@ export default function Toolbar({
               {joModuleEnabled && (
                 <DropdownMenuCheckboxItem checked={joEnabled} onCheckedChange={onToggleJo}>
                   <Users className="mr-2 h-4 w-4" />
-                  {t('toolbar.joTraffic')}
+                  {t('toolbar.jfs4xdTraffic')}
                   {joEnabled && joAircraftCount !== undefined && (
                     <Badge variant="warning" className="ml-auto px-1.5 py-0.5">
                       {joAircraftCount}

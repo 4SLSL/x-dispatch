@@ -22,7 +22,7 @@ const MODULE_UI: Record<
     }>;
   }
 > = {
-  jo: {
+  jfs4xd: {
     icon: Users,
     settings: () => <JoSettingsSection />,
   },

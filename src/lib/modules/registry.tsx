@@ -46,12 +46,12 @@ export function getAirportModuleTabs(modules: ModuleRuntimeInfo[]): AirportTabRe
 }
 
 export const toolbarModuleToggles: ToolbarToggleRegistration[] = [
-  { id: 'jo-traffic', moduleId: 'jo' },
+  { id: 'jfs4xd-traffic', moduleId: 'jfs4xd' },
   { id: 'vac-overlay', moduleId: 'sia-france' },
 ];
 
 export const mapModuleHooks: MapHookRegistration[] = [
-  { id: 'jo-traffic', moduleId: 'jo' },
+  { id: 'jfs4xd-traffic', moduleId: 'jfs4xd' },
   { id: 'vac-overlay', moduleId: 'sia-france' },
 ];
 

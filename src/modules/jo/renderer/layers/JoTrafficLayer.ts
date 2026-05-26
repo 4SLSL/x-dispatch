@@ -7,11 +7,11 @@ import {
 import { safeAddGeoJSONSource } from '@/components/Map/layers/types';
 import type { JoAircraft } from '@/modules/jo/lib/types';
 
-const PILOT_LAYER_ID = 'jo-traffic';
-const PILOT_SOURCE_ID = 'jo-traffic-source';
-const TRAIL_LAYER_ID = 'jo-trails';
-const TRAIL_SOURCE_ID = 'jo-trails-source';
-const LABEL_LAYER_ID = 'jo-labels';
+const PILOT_LAYER_ID = 'jfs4xd-traffic';
+const PILOT_SOURCE_ID = 'jfs4xd-traffic-source';
+const TRAIL_LAYER_ID = 'jfs4xd-trails';
+const TRAIL_SOURCE_ID = 'jfs4xd-trails-source';
+const LABEL_LAYER_ID = 'jfs4xd-labels';
 
 const COLOR = '#f97316';
 const COLOR_GLOW = '#ea580c';
