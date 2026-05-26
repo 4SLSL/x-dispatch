@@ -426,6 +426,15 @@ contextBridge.exposeInMainWorld('joAPI', {
     ipcRenderer.invoke('jo:getTraffic') as Promise<
       import('./modules/jo/lib/types').JoTrafficSnapshot
     >,
+  getSessionState: () =>
+    ipcRenderer.invoke('jo:getSessionState') as Promise<
+      import('./modules/jo/lib/types').JoSessionState
+    >,
+  joinSession: (request: import('./modules/jo/lib/types').JoJoinSessionRequest) =>
+    ipcRenderer.invoke('jo:joinSession', request) as Promise<
+      import('./modules/jo/lib/types').JoJoinSessionResult
+    >,
+  leaveSession: () => ipcRenderer.invoke('jo:leaveSession') as Promise<{ success: boolean }>,
 });
 
 contextBridge.exposeInMainWorld('siaAPI', {
@@ -906,6 +915,11 @@ declare global {
       browseForPlugin: () => Promise<string | null>;
       getStatus: () => Promise<import('./modules/jo/lib/types').JoBridgeStatus>;
       getTraffic: () => Promise<import('./modules/jo/lib/types').JoTrafficSnapshot>;
+      getSessionState: () => Promise<import('./modules/jo/lib/types').JoSessionState>;
+      joinSession: (
+        request: import('./modules/jo/lib/types').JoJoinSessionRequest
+      ) => Promise<import('./modules/jo/lib/types').JoJoinSessionResult>;
+      leaveSession: () => Promise<{ success: boolean }>;
     };
     siaAPI: {
       listProducts: () => Promise<readonly import('./modules/sia-france/lib/types').SiaProduct[]>;

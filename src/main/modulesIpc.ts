@@ -20,8 +20,8 @@ export async function syncBundledModulesRuntime(): Promise<void> {
   if (!getMainWindowRef) return;
   await syncSiaFranceModule(getMainWindowRef, getManager().isModuleEnabled('sia-france'));
   const modules = await getManager().listModules();
-  const jfs4xdEnabled = modules.some((m) => m.manifest.id === 'jfs4xd' && m.state.enabled);
-  await syncJoModule(jfs4xdEnabled);
+  const jfs4xd = modules.find((m) => m.manifest.id === 'jfs4xd');
+  await syncJoModule(Boolean(jfs4xd?.state.enabled), jfs4xd?.state.installPath);
 }
 
 export async function registerModulesIPC(getMainWindow: () => BrowserWindow | null): Promise<void> {
@@ -33,7 +33,9 @@ export async function registerModulesIPC(getMainWindow: () => BrowserWindow | nu
     const result = await getManager().setEnabled(moduleId, enabled);
     if (result.success) {
       if (moduleId === 'sia-france') await syncSiaFranceModule(getMainWindow, enabled);
-      if (moduleId === 'jfs4xd') await syncJoModule(enabled);
+      if (moduleId === 'jfs4xd') {
+        await syncJoModule(enabled, getManager().getModuleInstallPath('jfs4xd'));
+      }
     }
     if (result.success) {
       getMainWindow()?.webContents.send('modules:changed');

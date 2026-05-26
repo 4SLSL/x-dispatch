@@ -13,10 +13,10 @@
     {
       "id": "jfs4xd",
       "repository": "4SLSL/JFS4XD",
-      "defaultRef": "v1.0.0",
+      "defaultRef": "v1.0.1",
       "trusted": true,
       "name": "JFS4XD multiplayer",
-      "description": "JoinFS session traffic on the X-Dispatch map",
+      "description": "Integrated JoinFS client for X-Dispatch map overlay",
       "author": "4SLSL"
     }
   ]

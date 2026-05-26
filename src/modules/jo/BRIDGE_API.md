@@ -1,8 +1,10 @@
-# Jo bridge HTTP API (for plugin authors)
+# JFS4XD bridge HTTP API
 
-X-Dispatch polls a small JSON HTTP server that the **Jo** companion (or JoinFS add-on) should expose on the simulator machine.
+X-Dispatch embeds this bridge in the main process when the **JFS4XD** module is enabled.
 
 Default base URL: `http://127.0.0.1:9570`
+
+The network client (shipped with the external JFS4XD module as `bin/jfs4xd-client`) pushes session traffic via `POST /v1/ingest`. X-Dispatch reads status and aircraft for the map overlay.
 
 ## `GET /v1/status`
 
@@ -38,7 +40,20 @@ Default base URL: `http://127.0.0.1:9570`
 }
 ```
 
-Only aircraft in the **current JoinFS session** (or hub scope the user joined) should be listed.
+## `POST /v1/ingest`
+
+Used by the JFS4XD network client to update session state:
+
+```json
+{
+  "sessionConnected": true,
+  "sessionName": "My formation flight",
+  "hubName": "Public Hub #3",
+  "aircraft": [
+    /* same shape as GET /v1/aircraft */
+  ]
+}
+```
 
 ## X-Plane plugin layout
 

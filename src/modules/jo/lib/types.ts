@@ -44,3 +44,24 @@ export interface JoDownloadInfo {
   version?: string;
   notes?: string;
 }
+
+export interface JoSessionState {
+  running: boolean;
+  connected: boolean;
+  clientAvailable: boolean;
+  sessionName?: string;
+  hubName?: string;
+  lastError?: string;
+}
+
+export interface JoJoinSessionRequest {
+  hubAddress?: string;
+  sessionName?: string;
+  password?: string;
+}
+
+export interface JoJoinSessionResult {
+  success: boolean;
+  error?: string;
+  session?: JoSessionState;
+}

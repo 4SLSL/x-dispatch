@@ -219,6 +219,11 @@ export class ModuleManager {
     return fs.existsSync(bundlePath) ? bundlePath : null;
   }
 
+  getModuleInstallPath(moduleId: string): string | null {
+    const state = this.state.find((m) => m.id === moduleId);
+    return state?.installPath ?? null;
+  }
+
   private async isTrustedRepository(repository: string): Promise<boolean> {
     if (!repository) return false;
     const trusted = await this.getCatalog();

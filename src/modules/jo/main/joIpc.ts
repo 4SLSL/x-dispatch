@@ -1,15 +1,29 @@
 import { ipcMain, shell } from 'electron';
-import { JO_BRIDGE_DEFAULT_URL, fetchJoBridgeStatus, fetchJoTraffic } from '../lib/bridgeClient';
+import { JO_BRIDGE_DEFAULT_URL } from '../lib/bridgeClient';
+import type { JoJoinSessionRequest } from '../lib/types';
+import { getBridgeBaseUrl, getBridgeStatus, getTrafficSnapshot } from './bridgeServer';
+import { joinFsNetworkClient } from './joinfsNetworkClient';
 import { getJoDownloadInfo, getJoPluginDetection, installJoPluginFromFile } from './pluginInstall';
 
-let bridgeUrl = JO_BRIDGE_DEFAULT_URL;
+let useExternalBridge = false;
+let externalBridgeUrl = JO_BRIDGE_DEFAULT_URL;
 
 export function registerJoIPC(): void {
-  ipcMain.handle('jo:getBridgeUrl', () => bridgeUrl);
+  ipcMain.handle('jo:getBridgeUrl', () =>
+    useExternalBridge ? externalBridgeUrl : getBridgeBaseUrl()
+  );
 
   ipcMain.handle('jo:setBridgeUrl', (_, url: string) => {
-    bridgeUrl = (url || JO_BRIDGE_DEFAULT_URL).trim();
-    return { success: true, bridgeUrl };
+    const trimmed = (url || JO_BRIDGE_DEFAULT_URL).trim();
+    const embedded = getBridgeBaseUrl();
+    if (trimmed === embedded || trimmed === JO_BRIDGE_DEFAULT_URL) {
+      useExternalBridge = false;
+      externalBridgeUrl = JO_BRIDGE_DEFAULT_URL;
+    } else {
+      useExternalBridge = true;
+      externalBridgeUrl = trimmed;
+    }
+    return { success: true, bridgeUrl: useExternalBridge ? externalBridgeUrl : embedded };
   });
 
   ipcMain.handle('jo:detectPlugin', () => getJoPluginDetection());
@@ -46,12 +60,31 @@ export function registerJoIPC(): void {
 
   ipcMain.handle('jo:getStatus', async () => {
     const plugin = await getJoPluginDetection();
-    return fetchJoBridgeStatus(bridgeUrl, plugin.installed);
+    if (useExternalBridge) {
+      const { fetchJoBridgeStatus } = await import('../lib/bridgeClient');
+      return fetchJoBridgeStatus(externalBridgeUrl, plugin.installed);
+    }
+    return getBridgeStatus(plugin.installed);
   });
 
   ipcMain.handle('jo:getTraffic', async () => {
-    const snapshot = await fetchJoTraffic(bridgeUrl);
-    return snapshot ?? { updatedAt: new Date().toISOString(), aircraft: [] };
+    if (useExternalBridge) {
+      const { fetchJoTraffic } = await import('../lib/bridgeClient');
+      const snapshot = await fetchJoTraffic(externalBridgeUrl);
+      return snapshot ?? { updatedAt: new Date().toISOString(), aircraft: [] };
+    }
+    return getTrafficSnapshot();
+  });
+
+  ipcMain.handle('jo:getSessionState', () => joinFsNetworkClient.getSessionState());
+
+  ipcMain.handle('jo:joinSession', (_, request: JoJoinSessionRequest) =>
+    joinFsNetworkClient.joinSession(request ?? {})
+  );
+
+  ipcMain.handle('jo:leaveSession', async () => {
+    await joinFsNetworkClient.leaveSession();
+    return { success: true };
   });
 }
 
@@ -66,6 +99,9 @@ export function unregisterJoIPC(): void {
     'jo:browseForPlugin',
     'jo:getStatus',
     'jo:getTraffic',
+    'jo:getSessionState',
+    'jo:joinSession',
+    'jo:leaveSession',
   ];
   for (const ch of channels) ipcMain.removeHandler(ch);
 }

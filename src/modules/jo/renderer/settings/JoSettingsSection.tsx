@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AlertTriangle, Download, Plug, Radio, Users } from 'lucide-react';
+import { AlertTriangle, Download, LogOut, Plug, Radio, Users } from 'lucide-react';
 import {
   SettingsHeader,
   SettingsSectionBlock,
@@ -21,19 +21,24 @@ export function JoSettingsSection() {
   const [plugin, setPlugin] = useState<JoPluginDetection | null>(null);
   const [download, setDownload] = useState<JoDownloadInfo | null>(null);
   const [bridgeUrl, setBridgeUrl] = useState(JO_BRIDGE_DEFAULT_URL);
+  const [hubAddress, setHubAddress] = useState('');
+  const [sessionName, setSessionName] = useState('');
+  const [clientAvailable, setClientAvailable] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     void (async () => {
-      const [p, d, url] = await Promise.all([
+      const [p, d, url, session] = await Promise.all([
         window.joAPI.detectPlugin(),
         window.joAPI.getDownloadInfo(),
         window.joAPI.getBridgeUrl(),
+        window.joAPI.getSessionState(),
       ]);
       setPlugin(p);
       setDownload(d);
       setBridgeUrl(url);
+      setClientAvailable(session.clientAvailable);
     })();
   }, []);
 
@@ -72,6 +77,38 @@ export function JoSettingsSection() {
   const handleSaveBridge = async () => {
     await window.joAPI.setBridgeUrl(bridgeUrl);
     void refetch();
+  };
+
+  const handleJoinSession = async () => {
+    setMessage(null);
+    setBusy(true);
+    try {
+      const result = await window.joAPI.joinSession({
+        hubAddress: hubAddress.trim() || undefined,
+        sessionName: sessionName.trim() || undefined,
+      });
+      if (result.success) {
+        setClientAvailable(Boolean(result.session?.clientAvailable));
+        setMessage(t('jo.settings.sessionJoinOk'));
+        void refetch();
+      } else {
+        setMessage(
+          t('jo.settings.sessionJoinFailed', { error: result.error ?? t('common.error') })
+        );
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleLeaveSession = async () => {
+    setBusy(true);
+    try {
+      await window.joAPI.leaveSession();
+      void refetch();
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -120,6 +157,55 @@ export function JoSettingsSection() {
           >
             <Plug className="h-3.5 w-3.5" />
             {t('jo.settings.installFromFile')}
+          </Button>
+        </div>
+      </SettingsSectionBlock>
+
+      <SettingsSectionBlock title={t('jo.settings.sessionTitle')}>
+        <p className="mb-3 text-sm text-muted-foreground">{t('jo.settings.sessionDescription')}</p>
+        {!clientAvailable && (
+          <p className="mb-3 text-sm text-amber-600 dark:text-amber-400">
+            {t('jo.settings.clientMissing')}
+          </p>
+        )}
+        <div className="mb-3 grid gap-3 sm:grid-cols-2">
+          <div>
+            <Label htmlFor="jo-hub-address">{t('jo.settings.hubAddress')}</Label>
+            <Input
+              id="jo-hub-address"
+              value={hubAddress}
+              onChange={(e) => setHubAddress(e.target.value)}
+              placeholder="hub.joinfs.net:6112"
+            />
+          </div>
+          <div>
+            <Label htmlFor="jo-session-name">{t('jo.settings.sessionName')}</Label>
+            <Input
+              id="jo-session-name"
+              value={sessionName}
+              onChange={(e) => setSessionName(e.target.value)}
+              placeholder={t('jo.settings.sessionNamePlaceholder')}
+            />
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="default"
+            size="sm"
+            disabled={busy || status?.sessionConnected}
+            onClick={() => void handleJoinSession()}
+          >
+            {t('jo.settings.joinSession')}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1.5"
+            disabled={busy || !status?.sessionConnected}
+            onClick={() => void handleLeaveSession()}
+          >
+            <LogOut className="h-3.5 w-3.5" />
+            {t('jo.settings.leaveSession')}
           </Button>
         </div>
       </SettingsSectionBlock>
