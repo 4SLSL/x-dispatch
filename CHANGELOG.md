@@ -1,7 +1,7 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
-## v1.9.1a - 2026-05-26
+## v1.9.1c - 2026-05-26
 
 ### Features
 
@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 - **vac:** Onglet réglages par module, VAC internationales, retrait OACI by @4SLSL([bb1c045](https://github.com/4SLSL/x-dispatch/commit/bb1c0452e32461027f21667ac84c53f3e82035e5))
 - **modules:** Registre UI manifest-driven (phase 2a) by @4SLSL([50f0f47](https://github.com/4SLSL/x-dispatch/commit/50f0f47a93fb38966952642d4550ba296b212438))
 - **modules:** Phase 2a UI dans le module + squelette 2b, v1.9.1a by @4SLSL([5bfb03f](https://github.com/4SLSL/x-dispatch/commit/5bfb03faf092ae49b110fe20abb32fe0fee6b369))
+- **jo:** Module multijoueur JoinFS + catalogue jo-xplane by @4SLSL([b089ce2](https://github.com/4SLSL/x-dispatch/commit/b089ce2278920edd71a0d71182cd1788b4715103))
 
 ### Bug Fixes
 
@@ -28,6 +29,8 @@ All notable changes to this project will be documented in this file.
 ### Refactor
 
 - **map:** Drop taxiway lights layer by @lyestarzalt([d984415](https://github.com/4SLSL/x-dispatch/commit/d984415ec485000f888c19fc5733e86b45d73263))
+- **jfs4xd:** Rename module id and UI labels from Jo to JFS4XD by @4SLSL([8e08c14](https://github.com/4SLSL/x-dispatch/commit/8e08c1416c3a68edf69797111e0bff641ac73b5b))
+- **jfs4xd:** Make module external-only (not bundled) by @4SLSL([8731b5d](https://github.com/4SLSL/x-dispatch/commit/8731b5df39517f7e77b2ff6caaa97adc99e67f7e))
 
 ### Documentation
 
@@ -37,6 +40,7 @@ All notable changes to this project will be documented in this file.
 - Replace stale track-plane.png with refreshed flight-tracking.png by @lyestarzalt([e4ccfb2](https://github.com/4SLSL/x-dispatch/commit/e4ccfb2f3bd83428e7eedd274daeeb04790baa3c))
 - Add 3D terrain alt view and companion app screenshots by @lyestarzalt([2804f7e](https://github.com/4SLSL/x-dispatch/commit/2804f7e876cf8a02ff07f2e803b3330c13669421))
 - Update CHANGELOG.md for v1.9.2 by @github-actions[bot]([c1f235d](https://github.com/4SLSL/x-dispatch/commit/c1f235d74c8da4e4178a41835e5a349266d31f3d))
+- Update CHANGELOG.md for v1.9.1a by @github-actions[bot]([8f9e56b](https://github.com/4SLSL/x-dispatch/commit/8f9e56bd40b36a34b98b9957de71faee0f59d288))
 
 ### Miscellaneous
 
@@ -49,12 +53,15 @@ All notable changes to this project will be documented in this file.
 
 - Publish release candidates as prereleases by @lyestarzalt([509d72c](https://github.com/4SLSL/x-dispatch/commit/509d72cf7300712307ba80b07f3eecd2f549092b))
 - Sync website stable catalog on release by @lyestarzalt([6118e5d](https://github.com/4SLSL/x-dispatch/commit/6118e5d5e5a20a13a4a639c662c9cd6b5952772b))
+- **release:** Handle reruns for existing custom_version tags by @4SLSL([ba9a21f](https://github.com/4SLSL/x-dispatch/commit/ba9a21fff453e01b329ab34054bd0ec4b40b97d8))
 
 ### Release
 
 - 1.9.0 by @github-actions[bot]([e5363e3](https://github.com/4SLSL/x-dispatch/commit/e5363e359897608e161af39caa28a41170a3a0e6))
 - 1.9.2 by @github-actions[bot]([1f9b08f](https://github.com/4SLSL/x-dispatch/commit/1f9b08fd5be4cf4ac51944a0b2707249668021c0))
 - 1.9.1a by @github-actions[bot]([22d28ec](https://github.com/4SLSL/x-dispatch/commit/22d28ec2947578574fd6ecf2a0d5fbbc0053a464))
+- 1.9.1b by @github-actions[bot]([3bb8859](https://github.com/4SLSL/x-dispatch/commit/3bb88591645acf0e060451cd7f733eab56ae41e8))
+- 1.9.1c by @github-actions[bot]([5ea625d](https://github.com/4SLSL/x-dispatch/commit/5ea625d488fdce3a09050cae43c63cbdd2db9143))
 
 ### Tweak
 
