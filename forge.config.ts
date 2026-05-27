@@ -24,7 +24,7 @@ const config: ForgeConfig = {
     },
     icon: './assets/icon',
     executableName: 'x-dispatch',
-    extraResource: ['./assets'],
+    extraResource: ['./assets', './registry'],
     protocols: [
       {
         name: 'X-Dispatch',

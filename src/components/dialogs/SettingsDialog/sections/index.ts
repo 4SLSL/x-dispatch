@@ -7,4 +7,5 @@ export { default as AboutSection } from './AboutSection';
 export { GraphicsSection } from './GraphicsSection';
 export { default as SupportSection } from './SupportSection';
 export { CompanionAppsSection } from './CompanionAppsSection';
+export { ModulesSection } from './ModulesSection';
 export { LogsSection } from './LogsSection';
