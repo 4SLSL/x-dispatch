@@ -261,7 +261,21 @@
       "support": "Support",
       "about": "About",
       "companionApps": "Companion Apps",
-      "logs": "X-Plane Logs"
+      "logs": "X-Plane Logs",
+      "modules": "Modules"
+    },
+    "modules": {
+      "title": "Community modules",
+      "description": "Install optional ZIP modules and enable or disable them at runtime.",
+      "installZip": "Install ZIP module",
+      "installing": "Installing...",
+      "loading": "Loading...",
+      "empty": "No modules installed yet. Install a ZIP containing x-dispatch-module.json at its root.",
+      "meta": "{{id}} · v{{version}}",
+      "toggleAria": "Enable {{name}}",
+      "installSuccess": "Module installed",
+      "installError": "Install failed",
+      "updateError": "Update failed"
     },
     "airports": {
       "title": "Airports",

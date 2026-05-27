@@ -261,7 +261,21 @@
       "support": "Поддержка",
       "about": "О программе",
       "companionApps": "Сопутствующие приложения",
-      "logs": "Журналы X-Plane"
+      "logs": "Журналы X-Plane",
+      "modules": "Modules"
+    },
+    "modules": {
+      "title": "Community modules",
+      "description": "Install optional ZIP modules and enable or disable them at runtime.",
+      "installZip": "Install ZIP module",
+      "installing": "Installing...",
+      "loading": "Loading...",
+      "empty": "No modules installed yet. Install a ZIP containing x-dispatch-module.json at its root.",
+      "meta": "{{id}} · v{{version}}",
+      "toggleAria": "Enable {{name}}",
+      "installSuccess": "Module installed",
+      "installError": "Install failed",
+      "updateError": "Update failed"
     },
     "airports": {
       "title": "Аэропорты",

@@ -375,6 +375,21 @@ contextBridge.exposeInMainWorld('companionAppsAPI', {
   isElevated: (): Promise<boolean> => ipcRenderer.invoke('companion-apps:isElevated'),
 });
 
+contextBridge.exposeInMainWorld('modulesAPI', {
+  list: () => ipcRenderer.invoke('modules:list'),
+  catalog: () => ipcRenderer.invoke('modules:catalog'),
+  setEnabled: (moduleId: string, enabled: boolean) =>
+    ipcRenderer.invoke('modules:setEnabled', moduleId, enabled),
+  uninstall: (moduleId: string) => ipcRenderer.invoke('modules:uninstall', moduleId),
+  installFromZip: (zipPath: string) => ipcRenderer.invoke('modules:installFromZip', zipPath),
+  browseForZip: (): Promise<string | null> => ipcRenderer.invoke('modules:browseForZip'),
+  onChanged: (callback: () => void) => {
+    const handler = () => callback();
+    ipcRenderer.on('modules:changed', handler);
+    return () => ipcRenderer.removeListener('modules:changed', handler);
+  },
+});
+
 contextBridge.exposeInMainWorld('xpLogAPI', {
   read: (): Promise<XPLogReadResult> => ipcRenderer.invoke('xp-log:read'),
   openExternal: (): Promise<XPLogOpenResult> => ipcRenderer.invoke('xp-log:openExternal'),
@@ -773,6 +788,18 @@ declare global {
       }>;
       browseForExe: () => Promise<string | null>;
       isElevated: () => Promise<boolean>;
+    };
+    modulesAPI: {
+      list: () => Promise<import('./lib/modules/types').ModuleRuntimeInfo[]>;
+      catalog: () => Promise<import('./lib/modules/types').ModuleCatalogEntry[]>;
+      setEnabled: (
+        moduleId: string,
+        enabled: boolean
+      ) => Promise<{ success: boolean; error?: string }>;
+      uninstall: (moduleId: string) => Promise<{ success: boolean; error?: string }>;
+      installFromZip: (zipPath: string) => Promise<{ success: boolean; error?: string }>;
+      browseForZip: () => Promise<string | null>;
+      onChanged: (callback: () => void) => () => void;
     };
     xpLogAPI: {
       read: () => Promise<XPLogReadResult>;
