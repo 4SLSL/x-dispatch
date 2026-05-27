@@ -261,6 +261,7 @@
       "support": "Support",
       "about": "Über",
       "companionApps": "Begleit-Apps",
+      "modules": "Modules",
       "logs": "X-Plane-Protokolle"
     },
     "airports": {
@@ -543,6 +544,31 @@
         "fileMissing": "Die ausführbare Datei wurde unter dem konfigurierten Pfad nicht gefunden",
         "fileNotExecutable": "Die Datei ist nicht ausführbar",
         "spawnFailed": "Prozess konnte nicht gestartet werden"
+      }
+    },
+    "modules": {
+      "title": "Community modules",
+      "description": "Optional extensions installed from ZIP archives. Modules are stored under your user data folder and can be enabled or disabled without affecting the core app.",
+      "phaseNote": "Phase 1: install and lifecycle only. Renderer bundles and declarative UI hooks are not loaded yet.",
+      "installZip": "Install from ZIP…",
+      "installSuccess": "Module installed.",
+      "uninstall": "Uninstall",
+      "uninstallSuccess": "Module removed.",
+      "empty": "No community modules installed.",
+      "bundledBadge": "Shipped with X-Dispatch (cannot uninstall)",
+      "versionLabel": "v{{version}}",
+      "error": {
+        "INVALID_MANIFEST": "Invalid module manifest",
+        "MANIFEST_NOT_FOUND": "x-dispatch-module.json not found in the archive",
+        "UNSUPPORTED_FORMAT": "Unsupported archive format (ZIP only)",
+        "EXTRACTION_FAILED": "Could not extract the archive",
+        "ALREADY_INSTALLED": "This module is already installed",
+        "NOT_FOUND": "Module not found",
+        "BUNDLED_UNINSTALL": "Bundled modules cannot be uninstalled",
+        "MIN_APP_VERSION": "This module requires a newer version of X-Dispatch",
+        "INSTALL_FAILED": "Installation failed",
+        "BROWSE_FAILED": "Could not open file picker",
+        "INVALID_INPUT": "Invalid request"
       }
     },
     "logs": {

@@ -377,6 +377,16 @@ contextBridge.exposeInMainWorld('companionAppsAPI', {
   isElevated: (): Promise<boolean> => ipcRenderer.invoke('companion-apps:isElevated'),
 });
 
+contextBridge.exposeInMainWorld('modulesAPI', {
+  list: () => ipcRenderer.invoke('modules:list'),
+  getCatalog: () => ipcRenderer.invoke('modules:getCatalog'),
+  browseForZip: () => ipcRenderer.invoke('modules:browseForZip'),
+  installFromZip: (zipPath: string) => ipcRenderer.invoke('modules:installFromZip', zipPath),
+  enable: (id: string) => ipcRenderer.invoke('modules:enable', id),
+  disable: (id: string) => ipcRenderer.invoke('modules:disable', id),
+  uninstall: (id: string) => ipcRenderer.invoke('modules:uninstall', id),
+});
+
 contextBridge.exposeInMainWorld('xpLogAPI', {
   read: (): Promise<XPLogReadResult> => ipcRenderer.invoke('xp-log:read'),
   openExternal: (): Promise<XPLogOpenResult> => ipcRenderer.invoke('xp-log:openExternal'),
@@ -781,6 +791,44 @@ declare global {
       }>;
       browseForExe: () => Promise<string | null>;
       isElevated: () => Promise<boolean>;
+    };
+    modulesAPI: {
+      list: () => Promise<
+        | { ok: true; value: import('./lib/communityModules/types').ModuleListItem[] }
+        | { ok: false; error: import('./lib/communityModules/types').ModuleError }
+      >;
+      getCatalog: () => Promise<
+        | { ok: true; value: import('./lib/communityModules/types').ModuleCatalog }
+        | { ok: false; error: import('./lib/communityModules/types').ModuleError }
+      >;
+      browseForZip: () => Promise<
+        | { ok: true; value: string | null }
+        | { ok: false; error: import('./lib/communityModules/types').ModuleError }
+      >;
+      installFromZip: (
+        zipPath: string
+      ) => Promise<
+        | { ok: true; value: import('./lib/communityModules/types').ModuleListItem }
+        | { ok: false; error: import('./lib/communityModules/types').ModuleError }
+      >;
+      enable: (
+        id: string
+      ) => Promise<
+        | { ok: true; value: import('./lib/communityModules/types').ModuleListItem }
+        | { ok: false; error: import('./lib/communityModules/types').ModuleError }
+      >;
+      disable: (
+        id: string
+      ) => Promise<
+        | { ok: true; value: import('./lib/communityModules/types').ModuleListItem }
+        | { ok: false; error: import('./lib/communityModules/types').ModuleError }
+      >;
+      uninstall: (
+        id: string
+      ) => Promise<
+        | { ok: true; value: void }
+        | { ok: false; error: import('./lib/communityModules/types').ModuleError }
+      >;
     };
     xpLogAPI: {
       read: () => Promise<XPLogReadResult>;
