@@ -1,0 +1,45 @@
+name: Build macOS Intel DMG
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-mac-intel:
+    name: macOS Intel DMG
+    runs-on: macos-15-intel
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build DMG
+        run: npm run make -- --arch=x64
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-intel-dmg
+          path: out/make/**/*.dmg
+          retention-days: 7
+
+      - name: Upload to release (if tag v* exists on this commit)
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          dmg="$(find out/make -name '*.dmg' -print -quit)"
+          if [ -z "$dmg" ]; then echo "No .dmg found in out/make"; exit 1; fi
+          gh release upload "${{ github.ref_name }}" "$dmg" --clobber
