@@ -31,6 +31,16 @@ export const moduleContributionsSchema = z.object({
     .array(z.union([moduleSettingsLinkSchema, moduleSettingsToggleSchema]))
     .max(12)
     .optional(),
+  sidebar: z
+    .array(
+      z.object({
+        id: contributionIdSchema,
+        label: z.string().min(1).max(60),
+        description: z.string().max(200).optional(),
+      })
+    )
+    .max(8)
+    .optional(),
 });
 
 /** Phase 2b: declared but not loaded by the core yet. */
@@ -41,26 +51,36 @@ export const moduleRendererSchema = z.object({
     .regex(/^[\w./-]+\.(mjs|cjs|js)$/, 'entry must be a relative bundle path'),
 });
 
-export const moduleManifestSchema = z.object({
-  id: z
-    .string()
-    .min(3)
-    .max(128)
-    .regex(/^[a-z0-9][a-z0-9.-]*[a-z0-9]$/i, 'id must be a reverse-domain style slug'),
-  name: z.string().min(1).max(120),
-  version: z
-    .string()
-    .regex(/^\d+\.\d+\.\d+(-[a-zA-Z0-9.-]+)?$/, 'version must be semver (e.g. 1.0.0)'),
-  description: z.string().max(500).optional(),
-  author: z.string().max(120).optional(),
-  minAppVersion: z
-    .string()
-    .regex(/^\d+\.\d+\.\d+$/)
-    .optional(),
-  kind: moduleKindSchema.optional(),
-  contributions: moduleContributionsSchema.optional(),
-  renderer: moduleRendererSchema.optional(),
-});
+export const moduleManifestSchema = z
+  .object({
+    id: z
+      .string()
+      .min(3)
+      .max(128)
+      .regex(/^[a-z0-9][a-z0-9.-]*[a-z0-9]$/i, 'id must be a reverse-domain style slug'),
+    name: z.string().min(1).max(120),
+    version: z
+      .string()
+      .regex(/^\d+\.\d+\.\d+(-[a-zA-Z0-9.-]+)?$/, 'version must be semver (e.g. 1.0.0)'),
+    description: z.string().max(500).optional(),
+    author: z.string().max(120).optional(),
+    minAppVersion: z
+      .string()
+      .regex(/^\d+\.\d+\.\d+$/)
+      .optional(),
+    kind: moduleKindSchema.optional(),
+    contributions: moduleContributionsSchema.optional(),
+    renderer: moduleRendererSchema.optional(),
+  })
+  .superRefine((manifest, ctx) => {
+    if (manifest.contributions?.sidebar?.length && !manifest.renderer?.entry) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['renderer', 'entry'],
+        message: 'renderer.entry is required when contributions.sidebar is declared',
+      });
+    }
+  });
 
 export type ModuleManifest = z.infer<typeof moduleManifestSchema>;
 export type ModuleKind = z.infer<typeof moduleKindSchema>;
@@ -101,6 +121,16 @@ export interface ModuleCatalogEntry {
 export interface ModuleCatalog {
   version: number;
   modules: ModuleCatalogEntry[];
+}
+
+export interface ModuleSidebarTab {
+  tabId: string;
+  moduleId: string;
+  moduleName: string;
+  entryId: string;
+  label: string;
+  description?: string;
+  rendererUrl: string;
 }
 
 export type ModuleErrorCode =

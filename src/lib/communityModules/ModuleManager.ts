@@ -3,6 +3,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { pathToFileURL } from 'url';
 import { extractArchive } from '@/lib/addonManager/installer/extraction';
 import logger from '@/lib/utils/logger';
 import {
@@ -18,6 +19,7 @@ import {
   type ModuleListItem,
   type ModuleRecord,
   type ModuleResult,
+  type ModuleSidebarTab,
   type PersistedModuleState,
 } from './types';
 
@@ -79,6 +81,37 @@ export class ModuleManager {
   getContributions(): ModuleContributionGroup[] {
     this.init();
     return collectContributions(this.state.modules, this.toggleStatePath);
+  }
+
+  getSidebarTabs(): ModuleSidebarTab[] {
+    this.init();
+    const tabs: ModuleSidebarTab[] = [];
+
+    for (const record of Object.values(this.state.modules)) {
+      if (!record.enabled) continue;
+      const contributions = record.manifest.contributions;
+      const rendererEntry = record.manifest.renderer?.entry;
+      if (!contributions?.sidebar?.length || !rendererEntry) continue;
+
+      const absoluteRendererPath = path.resolve(record.installPath, rendererEntry);
+      if (!absoluteRendererPath.startsWith(record.installPath)) continue;
+      if (!fs.existsSync(absoluteRendererPath)) continue;
+      const rendererUrl = pathToFileURL(absoluteRendererPath).toString();
+
+      for (const entry of contributions.sidebar) {
+        tabs.push({
+          tabId: `module:${record.id}:${entry.id}`,
+          moduleId: record.id,
+          moduleName: record.manifest.name,
+          entryId: entry.id,
+          label: entry.label,
+          description: entry.description,
+          rendererUrl,
+        });
+      }
+    }
+
+    return tabs.sort((a, b) => a.label.localeCompare(b.label));
   }
 
   setContributionToggle(

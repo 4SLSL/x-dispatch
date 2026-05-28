@@ -25,6 +25,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAppVersion } from '@/hooks/useAppVersion';
 import { cn } from '@/lib/utils/helpers';
+import { useCommunityModuleSidebarTabsQuery } from '@/queries/useCommunityModulesQuery';
 import {
   AboutSection,
   AirportsSection,
@@ -32,6 +33,7 @@ import {
   CompanionAppsSection,
   GraphicsSection,
   LogsSection,
+  ModuleSidebarSection,
   ModulesSection,
   NavigationDataSection,
   SimbriefSection,
@@ -44,7 +46,7 @@ interface SettingsDialogProps {
   onClose: () => void;
 }
 
-type TabId =
+type BaseTabId =
   | 'xplane'
   | 'data'
   | 'appearance'
@@ -56,9 +58,10 @@ type TabId =
   | 'logs'
   | 'support'
   | 'about';
+type TabId = BaseTabId | `module:${string}`;
 
 interface TabConfig {
-  id: TabId;
+  id: BaseTabId;
   icon: typeof Plane;
   labelKey: string;
 }
@@ -80,13 +83,18 @@ const TABS: TabConfig[] = [
 export default function SettingsDialog({ open, onClose }: SettingsDialogProps) {
   const { t } = useTranslation();
   const { data: version } = useAppVersion();
+  const { data: moduleTabs = [] } = useCommunityModuleSidebarTabsQuery(open);
   const [activeTab, setActiveTab] = useState<TabId>('xplane');
+  const hasActiveModuleTab = activeTab.startsWith('module:')
+    ? moduleTabs.some((tab) => tab.tabId === activeTab)
+    : true;
+  const resolvedActiveTab: TabId = hasActiveModuleTab ? activeTab : 'modules';
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent className="h-[85vh] max-w-4xl gap-0 overflow-hidden p-0">
         <Tabs
-          value={activeTab}
+          value={resolvedActiveTab}
           onValueChange={(v) => setActiveTab(v as TabId)}
           className="flex h-full"
         >
@@ -115,6 +123,20 @@ export default function SettingsDialog({ open, onClose }: SettingsDialogProps) {
                   >
                     <Icon className="h-4 w-4" />
                     {labelKey.startsWith('settings.') ? t(labelKey) : labelKey}
+                  </TabsTrigger>
+                ))}
+                {moduleTabs.map((tab) => (
+                  <TabsTrigger
+                    key={tab.tabId}
+                    value={tab.tabId}
+                    className={cn(
+                      'w-full justify-start gap-3 px-3 py-2.5 text-sm font-medium',
+                      'data-[state=active]:bg-background data-[state=active]:shadow-sm',
+                      'transition-colors hover:bg-background/50'
+                    )}
+                  >
+                    <Package className="h-4 w-4" />
+                    {tab.label}
                   </TabsTrigger>
                 ))}
               </TabsList>
@@ -248,6 +270,20 @@ export default function SettingsDialog({ open, onClose }: SettingsDialogProps) {
                 </SectionErrorBoundary>
               </div>
             </TabsContent>
+
+            {moduleTabs.map((tab) => (
+              <TabsContent
+                key={tab.tabId}
+                value={tab.tabId}
+                className="absolute inset-0 mt-0 overflow-y-auto data-[state=inactive]:hidden"
+              >
+                <div className="p-6">
+                  <SectionErrorBoundary name={`Module ${tab.moduleName}`}>
+                    <ModuleSidebarSection key={`${tab.tabId}:${tab.rendererUrl}`} tab={tab} />
+                  </SectionErrorBoundary>
+                </div>
+              </TabsContent>
+            ))}
           </div>
         </Tabs>
       </DialogContent>

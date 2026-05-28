@@ -8,4 +8,5 @@ export { GraphicsSection } from './GraphicsSection';
 export { default as SupportSection } from './SupportSection';
 export { CompanionAppsSection } from './CompanionAppsSection';
 export { ModulesSection } from './ModulesSection';
+export { ModuleSidebarSection } from './ModuleSidebarSection';
 export { LogsSection } from './LogsSection';

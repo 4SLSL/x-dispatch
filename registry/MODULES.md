@@ -84,15 +84,25 @@ Declarative rows shown under **Settings → Modules** when the module is **enabl
 
 Limits: max **12** settings rows per module; `id` per row must be unique within the module.
 
-### Phase 2b — `renderer` (declared only)
+### Phase 2b — `renderer` + `contributions.sidebar`
 
 ```json
 {
+  "contributions": {
+    "sidebar": [{ "id": "vac", "label": "VAC" }]
+  },
   "renderer": { "entry": "dist/renderer.mjs" }
 }
 ```
 
-The core validates the path shape but **does not load** the bundle yet. Settings shows a short stub line. Loading will arrive in a later release (sandboxed entry point).
+The core loads the module renderer bundle when a module sidebar tab is selected in **Settings**.
+
+- `contributions.sidebar` creates module entries in the Settings sidebar.
+- `renderer.entry` is required when `contributions.sidebar` is declared.
+- The renderer bundle must export a default React component receiving:
+  - `moduleId`
+  - `moduleName`
+  - `entryId`
 
 ---
 
@@ -101,7 +111,7 @@ The core validates the path shape but **does not load** the bundle yet. Settings
 ```
 my-module.zip
 ├── x-dispatch-module.json
-└── dist/renderer.mjs   # optional, unused until phase 2b
+└── dist/renderer.mjs   # required if contributions.sidebar is declared
 ```
 
 ```bash
@@ -124,6 +134,7 @@ Install: **Settings → Modules → Install from ZIP…**
 | `modules:uninstall`             | 1     | External only                        |
 | `modules:getCatalog`            | 1     | `registry/modules.json`              |
 | `modules:browseForZip`          | 1     | File picker                          |
+| `modules:getSidebarTabs`        | 2b    | Enabled module sidebar tabs          |
 
 Lifecycle (phase 2): `modulesAPI.onLifecycle(cb)` → `{ moduleId, enabled }` when a module is toggled in Settings.
 
@@ -135,7 +146,7 @@ Lifecycle (phase 2): `modulesAPI.onLifecycle(cb)` → `{ moduleId, enabled }` wh
 | --------------------------------------- | ------- |
 | 1 — install, enable, Settings list      | done    |
 | 2a — declarative Settings contributions | done    |
-| 2b — renderer bundle load               | planned |
+| 2b — renderer bundle load               | done    |
 | 3 — catalog sync, signatures            | planned |
 
 ---
