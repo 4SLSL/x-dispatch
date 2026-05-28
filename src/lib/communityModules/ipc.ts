@@ -2,7 +2,7 @@ import { type BrowserWindow, dialog, ipcMain } from 'electron';
 import logger from '@/lib/utils/logger';
 import { getModuleManager } from './ModuleManager';
 import type { ModuleContributionGroup } from './contributions';
-import type { ModuleListItem, ModuleResult } from './types';
+import type { ModuleListItem, ModuleResult, ModuleSidebarTab } from './types';
 
 export function registerCommunityModulesIPC(getMainWindow: () => BrowserWindow | null): void {
   const manager = () => getModuleManager();
@@ -27,6 +27,17 @@ export function registerCommunityModulesIPC(getMainWindow: () => BrowserWindow |
   ipcMain.handle('modules:getContributions', (): ModuleResult<ModuleContributionGroup[]> => {
     try {
       return { ok: true, value: manager().getContributions() };
+    } catch (e) {
+      return {
+        ok: false,
+        error: { code: 'INSTALL_FAILED', message: (e as Error).message },
+      };
+    }
+  });
+
+  ipcMain.handle('modules:getSidebarTabs', (): ModuleResult<ModuleSidebarTab[]> => {
+    try {
+      return { ok: true, value: manager().getSidebarTabs() };
     } catch (e) {
       return {
         ok: false,

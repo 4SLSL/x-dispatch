@@ -19,10 +19,23 @@ describe('moduleManifestSchema', () => {
       version: '1.0.0',
       contributions: {
         settings: [{ id: 'docs', type: 'link', label: 'Docs', url: 'https://example.com' }],
+        sidebar: [{ id: 'vac', label: 'VAC' }],
       },
       renderer: { entry: 'dist/renderer.mjs' },
     });
     expect(result.success).toBe(true);
+  });
+
+  it('rejects sidebar contributions without renderer entry', () => {
+    const result = moduleManifestSchema.safeParse({
+      id: 'com.example.hello',
+      name: 'Hello',
+      version: '1.0.0',
+      contributions: {
+        sidebar: [{ id: 'vac', label: 'VAC' }],
+      },
+    });
+    expect(result.success).toBe(false);
   });
 
   it('rejects invalid id', () => {

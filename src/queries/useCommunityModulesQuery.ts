@@ -4,6 +4,7 @@ import type { ModuleListItem } from '@/lib/communityModules/types';
 
 export const communityModulesQueryKey = ['community-modules'] as const;
 export const communityModuleContributionsQueryKey = ['community-modules', 'contributions'] as const;
+export const communityModuleSidebarTabsQueryKey = ['community-modules', 'sidebar-tabs'] as const;
 
 export function useCommunityModulesQuery(enabled = true) {
   return useQuery({
@@ -29,12 +30,25 @@ export function useCommunityModulesContributionsQuery(enabled = true) {
   });
 }
 
+export function useCommunityModuleSidebarTabsQuery(enabled = true) {
+  return useQuery({
+    queryKey: communityModuleSidebarTabsQueryKey,
+    enabled,
+    queryFn: async (): Promise<import('@/lib/communityModules/types').ModuleSidebarTab[]> => {
+      const result = await window.modulesAPI.getSidebarTabs();
+      if (!result.ok) throw new Error(result.error.message);
+      return result.value;
+    },
+  });
+}
+
 export function useCommunityModulesMutations() {
   const queryClient = useQueryClient();
 
   const invalidate = () => {
     void queryClient.invalidateQueries({ queryKey: communityModulesQueryKey });
     void queryClient.invalidateQueries({ queryKey: communityModuleContributionsQueryKey });
+    void queryClient.invalidateQueries({ queryKey: communityModuleSidebarTabsQueryKey });
   };
 
   const installFromZip = useMutation({

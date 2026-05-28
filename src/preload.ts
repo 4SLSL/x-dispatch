@@ -380,6 +380,7 @@ contextBridge.exposeInMainWorld('companionAppsAPI', {
 contextBridge.exposeInMainWorld('modulesAPI', {
   list: () => ipcRenderer.invoke('modules:list'),
   getContributions: () => ipcRenderer.invoke('modules:getContributions'),
+  getSidebarTabs: () => ipcRenderer.invoke('modules:getSidebarTabs'),
   getCatalog: () => ipcRenderer.invoke('modules:getCatalog'),
   browseForZip: () => ipcRenderer.invoke('modules:browseForZip'),
   installFromZip: (zipPath: string) => ipcRenderer.invoke('modules:installFromZip', zipPath),
@@ -813,6 +814,10 @@ declare global {
             ok: true;
             value: import('./lib/communityModules/contributions').ModuleContributionGroup[];
           }
+        | { ok: false; error: import('./lib/communityModules/types').ModuleError }
+      >;
+      getSidebarTabs: () => Promise<
+        | { ok: true; value: import('./lib/communityModules/types').ModuleSidebarTab[] }
         | { ok: false; error: import('./lib/communityModules/types').ModuleError }
       >;
       getCatalog: () => Promise<
