@@ -1,6 +1,25 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## v1.9.3 - 2026-05-28
+
+### Features
+
+- **modules:** Phase 2a declarative settings and lifecycle IPC by @4SLSL([e3214a8](https://github.com/4SLSL/x-dispatch/commit/e3214a80c60ce856f4b113e6e354203b38a4dd05))
+
+### Documentation
+
+- Update CHANGELOG.md for v1.9.2 by @github-actions[bot]([e87a557](https://github.com/4SLSL/x-dispatch/commit/e87a5572cc1b4cab17e4c2401ac4cf6b4786b6f4))
+
+### CI/CD
+
+- Pin Node 22 in release workflows and add release-rebuild by @4SLSL([f2f4232](https://github.com/4SLSL/x-dispatch/commit/f2f4232ce8da1c5a77acb0fd851620c57dd11793))
+
+### Release
+
+- 1.9.3 by @github-actions[bot]([af81b6b](https://github.com/4SLSL/x-dispatch/commit/af81b6b1a76345fed31c36c925b03be6aa91250e))
+
+
 ## v1.9.2 - 2026-05-27
 
 ### Features
