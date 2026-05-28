@@ -13,6 +13,7 @@ import {
   setContributionToggle,
 } from './contributions';
 import { checkMinAppVersion, normalizeZipManifest, readAndValidateManifest } from './manifest';
+import { ModuleRuntime } from './moduleRuntime';
 import {
   MANIFEST_FILENAME,
   type ModuleCatalog,
@@ -55,12 +56,14 @@ export class ModuleManager {
   private readonly toggleStatePath: string;
   private state: PersistedModuleState = { version: STATE_VERSION, modules: {} };
   private initialized = false;
+  private readonly runtime: ModuleRuntime;
 
   constructor(userDataPath: string) {
     this.baseDir = path.join(userDataPath, 'community-modules');
     this.externalDir = path.join(this.baseDir, 'external');
     this.statePath = path.join(this.baseDir, 'state.json');
     this.toggleStatePath = path.join(this.baseDir, 'contribution-toggles.json');
+    this.runtime = new ModuleRuntime(userDataPath);
   }
 
   init(): void {
@@ -68,7 +71,25 @@ export class ModuleManager {
     fs.mkdirSync(this.externalDir, { recursive: true });
     this.loadState();
     this.reconcileExternal();
+    void this.reloadRuntime();
     this.initialized = true;
+  }
+
+  async callModule(
+    moduleId: string,
+    method: string,
+    args: unknown[] = []
+  ): Promise<ModuleResult<unknown>> {
+    this.init();
+    const record = this.state.modules[moduleId];
+    if (!record?.enabled) {
+      return moduleErr('NOT_FOUND', `Enabled module not found: ${moduleId}`);
+    }
+    return this.runtime.call(record, method, args);
+  }
+
+  private async reloadRuntime(): Promise<void> {
+    await this.runtime.reload(this.state.modules);
   }
 
   list(): ModuleListItem[] {
@@ -200,6 +221,7 @@ export class ModuleManager {
 
       this.state.modules[manifest.id] = record;
       this.saveState();
+      await this.reloadRuntime();
 
       logger.main.info(`community-modules: installed ${manifest.id}@${manifest.version}`);
       return moduleOk(toListItem(record));
@@ -218,7 +240,7 @@ export class ModuleManager {
     return this.setEnabled(id, false);
   }
 
-  uninstall(id: string): ModuleResult<void> {
+  async uninstall(id: string): Promise<ModuleResult<void>> {
     this.init();
     const record = this.state.modules[id];
     if (!record) return moduleErr('NOT_FOUND', `Module not found: ${id}`);
@@ -232,6 +254,7 @@ export class ModuleManager {
     delete this.state.modules[id];
     pruneToggleStateForModule(this.toggleStatePath, id);
     this.saveState();
+    await this.reloadRuntime();
     logger.main.info(`community-modules: uninstalled ${id}`);
     return moduleOk(undefined);
   }
@@ -244,6 +267,7 @@ export class ModuleManager {
     record.enabled = enabled;
     record.updatedAt = new Date().toISOString();
     this.saveState();
+    void this.reloadRuntime();
     return moduleOk(toListItem(record));
   }
 

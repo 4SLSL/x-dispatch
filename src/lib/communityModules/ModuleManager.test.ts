@@ -84,7 +84,7 @@ describe('ModuleManager', () => {
     if (enabled.ok) expect(enabled.value.enabled).toBe(true);
   });
 
-  it('uninstalls external modules', () => {
+  it('uninstalls external modules', async () => {
     const userData = tempUserData();
     writeExternalModule(userData, 'com.test.remove', {
       id: 'com.test.remove',
@@ -94,12 +94,12 @@ describe('ModuleManager', () => {
 
     const mgr = new ModuleManager(userData);
     mgr.init();
-    const result = mgr.uninstall('com.test.remove');
+    const result = await mgr.uninstall('com.test.remove');
     expect(result.ok).toBe(true);
     expect(mgr.list()).toEqual([]);
   });
 
-  it('rejects uninstalling bundled modules', () => {
+  it('rejects uninstalling bundled modules', async () => {
     const userData = tempUserData();
     const mgr = new ModuleManager(userData);
     mgr.init();
@@ -130,7 +130,7 @@ describe('ModuleManager', () => {
 
     const mgr2 = new ModuleManager(userData);
     mgr2.init();
-    const result = mgr2.uninstall('com.bundled.demo');
+    const result = await mgr2.uninstall('com.bundled.demo');
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error.code).toBe('BUNDLED_UNINSTALL');
   });

@@ -43,8 +43,16 @@ export const moduleContributionsSchema = z.object({
     .optional(),
 });
 
-/** Phase 2b: declared but not loaded by the core yet. */
+/** Phase 2b: renderer bundle loaded in Settings sidebar tabs. */
 export const moduleRendererSchema = z.object({
+  entry: z
+    .string()
+    .max(200)
+    .regex(/^[\w./-]+\.(mjs|cjs|js)$/, 'entry must be a relative bundle path'),
+});
+
+/** Phase 2c: main-process handlers (module-owned logic). */
+export const moduleMainSchema = z.object({
   entry: z
     .string()
     .max(200)
@@ -71,6 +79,7 @@ export const moduleManifestSchema = z
     kind: moduleKindSchema.optional(),
     contributions: moduleContributionsSchema.optional(),
     renderer: moduleRendererSchema.optional(),
+    main: moduleMainSchema.optional(),
   })
   .superRefine((manifest, ctx) => {
     if (manifest.contributions?.sidebar?.length && !manifest.renderer?.entry) {

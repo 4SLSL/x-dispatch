@@ -35,6 +35,24 @@ export function registerCommunityModulesIPC(getMainWindow: () => BrowserWindow |
     }
   });
 
+  ipcMain.handle('modules:call', async (_, payload: unknown): Promise<ModuleResult<unknown>> => {
+    if (
+      !payload ||
+      typeof payload !== 'object' ||
+      typeof (payload as { moduleId?: string }).moduleId !== 'string' ||
+      typeof (payload as { method?: string }).method !== 'string'
+    ) {
+      return { ok: false, error: { code: 'INVALID_INPUT', message: 'Invalid call payload' } };
+    }
+    const { moduleId, method, args } = payload as {
+      moduleId: string;
+      method: string;
+      args?: unknown;
+    };
+    const callArgs = Array.isArray(args) ? args : args !== undefined ? [args] : [];
+    return manager().callModule(moduleId, method, callArgs);
+  });
+
   ipcMain.handle('modules:getSidebarTabs', (): ModuleResult<ModuleSidebarTab[]> => {
     try {
       return { ok: true, value: manager().getSidebarTabs() };

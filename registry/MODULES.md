@@ -135,6 +135,7 @@ Install: **Settings → Modules → Install from ZIP…**
 | `modules:getCatalog`            | 1     | `registry/modules.json`              |
 | `modules:browseForZip`          | 1     | File picker                          |
 | `modules:getSidebarTabs`        | 2b    | Enabled module sidebar tabs          |
+| `modules:call`                  | 2c    | Invoke module `main` handlers        |
 
 Lifecycle (phase 2): `modulesAPI.onLifecycle(cb)` → `{ moduleId, enabled }` when a module is toggled in Settings.
 
