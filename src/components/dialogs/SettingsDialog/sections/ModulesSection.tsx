@@ -5,11 +5,13 @@ import { Button } from '@/components/ui/button';
 import type { ModuleError } from '@/lib/communityModules/types';
 import { cn } from '@/lib/utils/helpers';
 import {
+  useCommunityModulesContributionsQuery,
   useCommunityModulesMutations,
   useCommunityModulesQuery,
 } from '@/queries/useCommunityModulesQuery';
 import { SettingsEmptyState, SettingsHeader, SettingsToggleRow } from '../primitives';
 import type { SettingsSectionProps } from '../types';
+import { ModuleContributionsPanel } from './ModuleContributionsPanel';
 
 function errorMessage(error: ModuleError, t: (key: string) => string): string {
   const key = `settings.modules.error.${error.code}`;
@@ -20,6 +22,7 @@ function errorMessage(error: ModuleError, t: (key: string) => string): string {
 export function ModulesSection({ className }: SettingsSectionProps = {}) {
   const { t } = useTranslation();
   const { data: modules = [], isLoading, refetch } = useCommunityModulesQuery();
+  const { data: contributionGroups = [] } = useCommunityModulesContributionsQuery();
   const { installFromZip, setEnabled, uninstall } = useCommunityModulesMutations();
 
   const installZip = async () => {
@@ -63,7 +66,7 @@ export function ModulesSection({ className }: SettingsSectionProps = {}) {
         description={t('settings.modules.description')}
       />
 
-      <p className="text-sm text-muted-foreground">{t('settings.modules.phaseNote')}</p>
+      <p className="text-sm text-muted-foreground">{t('settings.modules.phase2Note')}</p>
 
       <div className="flex flex-wrap gap-2">
         <Button
@@ -130,6 +133,8 @@ export function ModulesSection({ className }: SettingsSectionProps = {}) {
           ))}
         </div>
       )}
+
+      <ModuleContributionsPanel groups={contributionGroups} />
     </div>
   );
 }
