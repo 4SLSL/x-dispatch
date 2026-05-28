@@ -4,6 +4,43 @@ export const MANIFEST_FILENAME = 'x-dispatch-module.json';
 
 export const moduleKindSchema = z.enum(['bundled', 'external']);
 
+const contributionIdSchema = z
+  .string()
+  .min(1)
+  .max(64)
+  .regex(/^[a-z][a-z0-9-]*$/i);
+
+export const moduleSettingsLinkSchema = z.object({
+  id: contributionIdSchema,
+  type: z.literal('link'),
+  label: z.string().min(1).max(120),
+  description: z.string().max(300).optional(),
+  url: z.string().url().max(2000),
+});
+
+export const moduleSettingsToggleSchema = z.object({
+  id: contributionIdSchema,
+  type: z.literal('toggle'),
+  label: z.string().min(1).max(120),
+  description: z.string().max(300).optional(),
+  default: z.boolean().optional(),
+});
+
+export const moduleContributionsSchema = z.object({
+  settings: z
+    .array(z.union([moduleSettingsLinkSchema, moduleSettingsToggleSchema]))
+    .max(12)
+    .optional(),
+});
+
+/** Phase 2b: declared but not loaded by the core yet. */
+export const moduleRendererSchema = z.object({
+  entry: z
+    .string()
+    .max(200)
+    .regex(/^[\w./-]+\.(mjs|cjs|js)$/, 'entry must be a relative bundle path'),
+});
+
 export const moduleManifestSchema = z.object({
   id: z
     .string()
@@ -21,6 +58,8 @@ export const moduleManifestSchema = z.object({
     .regex(/^\d+\.\d+\.\d+$/)
     .optional(),
   kind: moduleKindSchema.optional(),
+  contributions: moduleContributionsSchema.optional(),
+  renderer: moduleRendererSchema.optional(),
 });
 
 export type ModuleManifest = z.infer<typeof moduleManifestSchema>;

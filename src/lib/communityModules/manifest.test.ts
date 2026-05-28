@@ -12,6 +12,19 @@ describe('moduleManifestSchema', () => {
     expect(result.success).toBe(true);
   });
 
+  it('accepts phase 2 contributions', () => {
+    const result = moduleManifestSchema.safeParse({
+      id: 'com.example.hello',
+      name: 'Hello',
+      version: '1.0.0',
+      contributions: {
+        settings: [{ id: 'docs', type: 'link', label: 'Docs', url: 'https://example.com' }],
+      },
+      renderer: { entry: 'dist/renderer.mjs' },
+    });
+    expect(result.success).toBe(true);
+  });
+
   it('rejects invalid id', () => {
     const result = moduleManifestSchema.safeParse({
       id: '..bad',

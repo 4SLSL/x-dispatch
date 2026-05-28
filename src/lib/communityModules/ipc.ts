@@ -1,14 +1,32 @@
 import { type BrowserWindow, dialog, ipcMain } from 'electron';
 import logger from '@/lib/utils/logger';
 import { getModuleManager } from './ModuleManager';
+import type { ModuleContributionGroup } from './contributions';
 import type { ModuleListItem, ModuleResult } from './types';
 
 export function registerCommunityModulesIPC(getMainWindow: () => BrowserWindow | null): void {
   const manager = () => getModuleManager();
 
+  const notifyLifecycle = (moduleId: string, enabled: boolean) => {
+    const win = getMainWindow();
+    if (!win || win.isDestroyed()) return;
+    win.webContents.send('modules:lifecycle', { moduleId, enabled });
+  };
+
   ipcMain.handle('modules:list', (): ModuleResult<ModuleListItem[]> => {
     try {
       return { ok: true, value: manager().list() };
+    } catch (e) {
+      return {
+        ok: false,
+        error: { code: 'INSTALL_FAILED', message: (e as Error).message },
+      };
+    }
+  });
+
+  ipcMain.handle('modules:getContributions', (): ModuleResult<ModuleContributionGroup[]> => {
+    try {
+      return { ok: true, value: manager().getContributions() };
     } catch (e) {
       return {
         ok: false,
@@ -76,14 +94,18 @@ export function registerCommunityModulesIPC(getMainWindow: () => BrowserWindow |
     if (typeof id !== 'string' || !id) {
       return { ok: false, error: { code: 'INVALID_INPUT', message: 'id required' } };
     }
-    return manager().enable(id);
+    const result = manager().enable(id);
+    if (result.ok) notifyLifecycle(id, true);
+    return result;
   });
 
   ipcMain.handle('modules:disable', async (_, id: unknown) => {
     if (typeof id !== 'string' || !id) {
       return { ok: false, error: { code: 'INVALID_INPUT', message: 'id required' } };
     }
-    return manager().disable(id);
+    const result = manager().disable(id);
+    if (result.ok) notifyLifecycle(id, false);
+    return result;
   });
 
   ipcMain.handle('modules:uninstall', async (_, id: unknown) => {
@@ -92,4 +114,25 @@ export function registerCommunityModulesIPC(getMainWindow: () => BrowserWindow |
     }
     return manager().uninstall(id);
   });
+
+  ipcMain.handle(
+    'modules:setContributionToggle',
+    async (_, payload: unknown): Promise<ModuleResult<void>> => {
+      if (
+        !payload ||
+        typeof payload !== 'object' ||
+        typeof (payload as { moduleId?: string }).moduleId !== 'string' ||
+        typeof (payload as { contributionId?: string }).contributionId !== 'string' ||
+        typeof (payload as { enabled?: boolean }).enabled !== 'boolean'
+      ) {
+        return { ok: false, error: { code: 'INVALID_INPUT', message: 'Invalid toggle payload' } };
+      }
+      const { moduleId, contributionId, enabled } = payload as {
+        moduleId: string;
+        contributionId: string;
+        enabled: boolean;
+      };
+      return manager().setContributionToggle(moduleId, contributionId, enabled);
+    }
+  );
 }

@@ -5,6 +5,12 @@ import * as os from 'os';
 import * as path from 'path';
 import { extractArchive } from '@/lib/addonManager/installer/extraction';
 import logger from '@/lib/utils/logger';
+import {
+  type ModuleContributionGroup,
+  collectContributions,
+  pruneToggleStateForModule,
+  setContributionToggle,
+} from './contributions';
 import { checkMinAppVersion, normalizeZipManifest, readAndValidateManifest } from './manifest';
 import {
   MANIFEST_FILENAME,
@@ -44,6 +50,7 @@ export class ModuleManager {
   private readonly baseDir: string;
   private readonly externalDir: string;
   private readonly statePath: string;
+  private readonly toggleStatePath: string;
   private state: PersistedModuleState = { version: STATE_VERSION, modules: {} };
   private initialized = false;
 
@@ -51,6 +58,7 @@ export class ModuleManager {
     this.baseDir = path.join(userDataPath, 'community-modules');
     this.externalDir = path.join(this.baseDir, 'external');
     this.statePath = path.join(this.baseDir, 'state.json');
+    this.toggleStatePath = path.join(this.baseDir, 'contribution-toggles.json');
   }
 
   init(): void {
@@ -66,6 +74,25 @@ export class ModuleManager {
     return Object.values(this.state.modules)
       .map(toListItem)
       .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  getContributions(): ModuleContributionGroup[] {
+    this.init();
+    return collectContributions(this.state.modules, this.toggleStatePath);
+  }
+
+  setContributionToggle(
+    moduleId: string,
+    contributionId: string,
+    enabled: boolean
+  ): ModuleResult<void> {
+    this.init();
+    const record = this.state.modules[moduleId];
+    if (!record?.enabled) {
+      return moduleErr('NOT_FOUND', `Enabled module not found: ${moduleId}`);
+    }
+    setContributionToggle(this.toggleStatePath, moduleId, contributionId, enabled);
+    return moduleOk(undefined);
   }
 
   getCatalog(): ModuleCatalog {
@@ -170,6 +197,7 @@ export class ModuleManager {
       fs.rmSync(record.installPath, { recursive: true, force: true });
     }
     delete this.state.modules[id];
+    pruneToggleStateForModule(this.toggleStatePath, id);
     this.saveState();
     logger.main.info(`community-modules: uninstalled ${id}`);
     return moduleOk(undefined);

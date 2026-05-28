@@ -379,12 +379,23 @@ contextBridge.exposeInMainWorld('companionAppsAPI', {
 
 contextBridge.exposeInMainWorld('modulesAPI', {
   list: () => ipcRenderer.invoke('modules:list'),
+  getContributions: () => ipcRenderer.invoke('modules:getContributions'),
   getCatalog: () => ipcRenderer.invoke('modules:getCatalog'),
   browseForZip: () => ipcRenderer.invoke('modules:browseForZip'),
   installFromZip: (zipPath: string) => ipcRenderer.invoke('modules:installFromZip', zipPath),
   enable: (id: string) => ipcRenderer.invoke('modules:enable', id),
   disable: (id: string) => ipcRenderer.invoke('modules:disable', id),
   uninstall: (id: string) => ipcRenderer.invoke('modules:uninstall', id),
+  setContributionToggle: (input: { moduleId: string; contributionId: string; enabled: boolean }) =>
+    ipcRenderer.invoke('modules:setContributionToggle', input),
+  onLifecycle: (callback: (event: { moduleId: string; enabled: boolean }) => void) => {
+    const handler = (
+      _: Electron.IpcRendererEvent,
+      payload: { moduleId: string; enabled: boolean }
+    ) => callback(payload);
+    ipcRenderer.on('modules:lifecycle', handler);
+    return () => ipcRenderer.removeListener('modules:lifecycle', handler);
+  },
 });
 
 contextBridge.exposeInMainWorld('xpLogAPI', {
@@ -797,6 +808,13 @@ declare global {
         | { ok: true; value: import('./lib/communityModules/types').ModuleListItem[] }
         | { ok: false; error: import('./lib/communityModules/types').ModuleError }
       >;
+      getContributions: () => Promise<
+        | {
+            ok: true;
+            value: import('./lib/communityModules/contributions').ModuleContributionGroup[];
+          }
+        | { ok: false; error: import('./lib/communityModules/types').ModuleError }
+      >;
       getCatalog: () => Promise<
         | { ok: true; value: import('./lib/communityModules/types').ModuleCatalog }
         | { ok: false; error: import('./lib/communityModules/types').ModuleError }
@@ -829,6 +847,17 @@ declare global {
         | { ok: true; value: void }
         | { ok: false; error: import('./lib/communityModules/types').ModuleError }
       >;
+      setContributionToggle: (input: {
+        moduleId: string;
+        contributionId: string;
+        enabled: boolean;
+      }) => Promise<
+        | { ok: true; value: void }
+        | { ok: false; error: import('./lib/communityModules/types').ModuleError }
+      >;
+      onLifecycle: (
+        callback: (event: { moduleId: string; enabled: boolean }) => void
+      ) => () => void;
     };
     xpLogAPI: {
       read: () => Promise<XPLogReadResult>;

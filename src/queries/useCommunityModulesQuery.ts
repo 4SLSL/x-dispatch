@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { ModuleContributionGroup } from '@/lib/communityModules/contributions';
 import type { ModuleListItem } from '@/lib/communityModules/types';
 
 export const communityModulesQueryKey = ['community-modules'] as const;
+export const communityModuleContributionsQueryKey = ['community-modules', 'contributions'] as const;
 
 export function useCommunityModulesQuery(enabled = true) {
   return useQuery({
@@ -15,10 +17,25 @@ export function useCommunityModulesQuery(enabled = true) {
   });
 }
 
+export function useCommunityModulesContributionsQuery(enabled = true) {
+  return useQuery({
+    queryKey: communityModuleContributionsQueryKey,
+    enabled,
+    queryFn: async (): Promise<ModuleContributionGroup[]> => {
+      const result = await window.modulesAPI.getContributions();
+      if (!result.ok) throw new Error(result.error.message);
+      return result.value;
+    },
+  });
+}
+
 export function useCommunityModulesMutations() {
   const queryClient = useQueryClient();
 
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: communityModulesQueryKey });
+  const invalidate = () => {
+    void queryClient.invalidateQueries({ queryKey: communityModulesQueryKey });
+    void queryClient.invalidateQueries({ queryKey: communityModuleContributionsQueryKey });
+  };
 
   const installFromZip = useMutation({
     mutationFn: async (zipPath: string) => {
@@ -48,5 +65,13 @@ export function useCommunityModulesMutations() {
     onSuccess: invalidate,
   });
 
-  return { installFromZip, setEnabled, uninstall };
+  const setContributionToggle = useMutation({
+    mutationFn: async (input: { moduleId: string; contributionId: string; enabled: boolean }) => {
+      const result = await window.modulesAPI.setContributionToggle(input);
+      if (!result.ok) throw result.error;
+    },
+    onSuccess: invalidate,
+  });
+
+  return { installFromZip, setEnabled, uninstall, setContributionToggle };
 }

@@ -549,7 +549,9 @@
     "modules": {
       "title": "Community modules",
       "description": "Optional extensions installed from ZIP archives. Modules are stored under your user data folder and can be enabled or disabled without affecting the core app.",
-      "phaseNote": "Phase 1: install and lifecycle only. Renderer bundles and declarative UI hooks are not loaded yet.",
+      "phase2Note": "Phase 2a: declarative Settings rows from the manifest. Renderer bundles (phase 2b) are declared but not loaded.",
+      "contributionsTitle": "Module options",
+      "rendererStub": "Renderer entry \"{{entry}}\" is declared but not loaded yet (phase 2b).",
       "installZip": "Install from ZIP…",
       "installSuccess": "Module installed.",
       "uninstall": "Uninstall",
